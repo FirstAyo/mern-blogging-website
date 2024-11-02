@@ -25,6 +25,16 @@ mongoose.connect(process.env.DB_LOCATION, {
     autoIndex: true
 });
 
+const formareDataToSend = (user) => {
+    return {
+        profile_img: user.personal_info.profile_img,
+        username: user.personal_info.username,
+        fullname: user.personal_info.fullname
+          
+        }
+        
+    }
+
 const generateUsername = async (email) => {
     let username = email.split("@")[0];
 
@@ -53,7 +63,7 @@ server.post("/signup", (req, res) => {
         return res.status(403).json({ "error": "Invalid email" })
     }
     if (!passwordRegex.test(password)) {
-        return res.status(403).json({ "error": "Password should ve 6 to 20 characters long with a numeric, 1 lowercase and 1 uppercase letters" })
+        return res.status(403).json({ "error": "Password should be 6 to 20 characters long with a numeric, 1 lowercase and 1 uppercase letters" })
     }
 
     bcrypt.hash(password, 10, async (err, hashed_password) => {
@@ -65,7 +75,7 @@ server.post("/signup", (req, res) => {
         })
 
         user.save().then((u) =>{
-            return res.status(200).json({ user: u })
+            return res.status(200).json(formareDataToSend(u))
         })
         .catch((err) => {
 
